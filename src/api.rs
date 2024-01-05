@@ -1,8 +1,8 @@
+use crate::common::{AppResult, Paginator};
 use crate::state::SharedState;
 use anyhow::Context;
 use axum::{
     extract::{Path, Query, State},
-    http::StatusCode,
     response::{IntoResponse, Json},
     routing::{delete, post},
     Router,
@@ -146,50 +146,4 @@ struct Post {
     body: String,
     created_at: NaiveDateTime,
     modified_at: NaiveDateTime,
-}
-
-struct AppError(anyhow::Error);
-
-impl IntoResponse for AppError {
-    fn into_response(self) -> axum::response::Response {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Something went wrong: {}", self.0),
-        )
-            .into_response()
-    }
-}
-
-impl<E> From<E> for AppError
-where
-    E: Into<anyhow::Error>,
-{
-    fn from(value: E) -> Self {
-        Self(value.into())
-    }
-}
-
-type AppResult<T> = Result<T, AppError>;
-
-#[derive(Debug, Deserialize, Clone, Copy)]
-struct Paginator {
-    #[serde(default = "Paginator::default_page_size")]
-    page_size: i32,
-    #[serde(default = "Paginator::default_page")]
-    page: i32,
-}
-
-impl Paginator {
-    fn default_page_size() -> i32 {
-        10
-    }
-
-    fn default_page() -> i32 {
-        1
-    }
-
-    fn offset(self) -> i32 {
-        let index = self.page.max(1) - 1;
-        index * self.page_size
-    }
 }

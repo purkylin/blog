@@ -3,6 +3,7 @@ use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod api;
+mod common;
 mod routes;
 mod state;
 mod view;
